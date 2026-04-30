@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MGT 4250 — Assignment 5 Peer Review</title>
+
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #5f6368;
+    --line: #e5e5e2;
+    --accent: #7a3500;
+    --accent-soft: #fdf6ed;
+    --good: #2f7d32;
+    --warn: #b45309;
+    --bad: #b91c1c;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    font-size: 16px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 32px 20px 80px; }
+  header.site {
+    border-bottom: 1px solid var(--line);
+    padding: 18px 20px;
+    background: var(--surface);
+  }
+  header.site .inner {
+    max-width: 920px; margin: 0 auto;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  }
+  header.site h1 {
+    font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -.01em;
+  }
+  header.site .sub {
+    font-size: 13px; color: var(--muted);
+  }
+  h2 { font-size: 22px; margin: 0 0 6px; letter-spacing: -.01em; }
+  h3 { font-size: 16px; margin: 24px 0 8px; }
+  p  { margin: 8px 0; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+  .card + .card { margin-top: 16px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  input[type=text], input[type=email], select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    background: #fff;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(122,53,0,.12);
+  }
+  textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
+  button {
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--accent); color: #fff;
+    padding: 11px 18px; border-radius: 8px;
+    font: inherit; font-weight: 600;
+    transition: background .15s, transform .05s;
+  }
+  button:hover:not(:disabled) { background: #5a2700; }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button:disabled { background: #c7c4be; cursor: not-allowed; }
+  button.secondary {
+    background: #fff; color: var(--ink); border: 1px solid var(--line);
+  }
+  button.secondary:hover:not(:disabled) { background: #f4f3f0; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row > * { flex: 1 1 0; min-width: 0; }
+
+  /* Assignment cards */
+  .assign-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-top: 16px;
+  }
+  @media (max-width: 720px) { .assign-grid { grid-template-columns: 1fr; } }
+  .assign-card {
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px; background: var(--surface);
+  }
+  .assign-card .pill {
+    display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px; border-radius: 999px; margin-bottom: 8px;
+  }
+  .assign-card h4 { margin: 4px 0 6px; font-size: 18px; }
+  .assign-card .filename { font-size: 12px; color: var(--muted); word-break: break-all; }
+  .assign-card .actions { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .assign-card .actions a, .assign-card .actions button {
+    text-decoration: none; font-size: 14px; padding: 8px 12px;
+  }
+  .assign-card .actions a {
+    background: #fff; border: 1px solid var(--line); color: var(--ink);
+    border-radius: 8px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .assign-card .actions a:hover { background: #f4f3f0; }
+  .assign-card.complete { background: #f3faf3; border-color: #cde7cd; }
+  .assign-card.complete .pill { background: #e0f2e0; color: var(--good); }
+
+  /* Rubric items */
+  .rubric-item {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    background: #fff;
+  }
+  .rubric-item .head {
+    display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .rubric-item .head .title { font-weight: 600; font-size: 15px; }
+  .rubric-item .head .max  { color: var(--muted); font-size: 13px; white-space: nowrap; }
+  .rubric-item .question {
+    font-size: 13px; color: var(--muted);
+    background: #fafaf7; border-left: 3px solid var(--accent);
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+    margin: 8px 0 14px;
+  }
+  .rubric-item .score-row {
+    display: grid; grid-template-columns: 140px 1fr; gap: 14px; align-items: start;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 560px) { .rubric-item .score-row { grid-template-columns: 1fr; } }
+  .score-input { display: flex; align-items: center; gap: 8px; }
+  .score-input input {
+    width: 70px; text-align: center; font-weight: 600; font-size: 16px;
+  }
+  .score-input .of { color: var(--muted); font-size: 14px; }
+  .feedback-meta {
+    display: flex; justify-content: space-between; gap: 8px;
+    font-size: 12px; color: var(--muted); margin-top: 4px;
+  }
+  .feedback-meta.warn { color: var(--warn); }
+  .feedback-meta.good { color: var(--good); }
+  .extreme-warning {
+    margin-top: 8px; font-size: 13px; color: var(--warn);
+    background: #fef7e6; border: 1px solid #f3e0a8;
+    padding: 8px 12px; border-radius: 6px;
+    display: none;
+  }
+  .extreme-warning.show { display: block; }
+
+  /* Totals bar */
+  .totals {
+    position: sticky; bottom: 0; z-index: 10;
+    background: #fff; border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 18px; margin-top: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.04);
+  }
+  .totals .total-num { font-size: 22px; font-weight: 700; }
+  .totals .total-num.bad { color: var(--bad); }
+  .totals .total-num.warn { color: var(--warn); }
+  .totals .total-num.good { color: var(--good); }
+
+  /* Progress steps */
+  .steps {
+    display: flex; gap: 8px; margin-bottom: 24px;
+    font-size: 12px; color: var(--muted);
+  }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step .dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #e5e5e2; color: #fff; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  .step.active .dot { background: var(--accent); }
+  .step.done .dot { background: var(--good); }
+  .step .sep { color: #d6d6d2; }
+
+  .hidden { display: none !important; }
+
+  .alert-error {
+    background: #fde8e8; border: 1px solid #f8b4b4; color: #9b1c1c;
+    padding: 12px 14px; border-radius: 8px; margin-top: 12px; font-size: 14px;
+  }
+  .alert-success {
+    background: #e6f4ea; border: 1px solid #b7dfb9; color: #1b5e20;
+    padding: 12px 14px; border-radius: 8px; margin-top: 12px;
+  }
+  .small-btn-row {
+    display: flex; gap: 10px; margin-top: 18px; align-items: center;
+  }
+  .footer-note {
+    font-size: 12px; color: var(--muted); text-align: center; margin-top: 30px;
+  }
+  code.kbd {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: #f1efeb; padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="inner">
+    <h1>MGT 4250 — Assignment 5 Peer Review</h1>
+    <span class="sub">Data Visualization &amp; Storytelling</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ STEP 1: LOGIN ============ -->
+  <section id="step-login" class="card">
+    <h2>Sign in to begin</h2>
+    <p class="muted">Select your name to receive your two peer-review assignments. You will review two of your classmates' submissions against the official rubric. <strong>Reviews are anonymous to the student receiving them</strong> — only the course instructor will know who wrote each review.</p>
+
+    <div style="margin-top:16px;">
+      <label for="reviewerName">Your name</label>
+      <select id="reviewerName">
+        <option value="">— Select your name —</option>
+      </select>
+    </div>
+    <div class="small-btn-row">
+      <button id="btnLogin">Get my assignments &rarr;</button>
+    </div>
+    <div id="loginError" class="alert-error hidden"></div>
+  </section>
+
+  <!-- ============ STEP 2: ASSIGNMENTS ============ -->
+  <section id="step-assignments" class="hidden">
+    <div class="steps">
+      <div class="step done"><span class="dot">&#x2713;</span> Sign in</div><span class="sep">/</span>
+      <div class="step active"><span class="dot">2</span> Your assignments</div><span class="sep">/</span>
+      <div class="step"><span class="dot">3</span> Review</div><span class="sep">/</span>
+      <div class="step"><span class="dot">4</span> Submit</div>
+    </div>
+
+    <div class="card">
+      <h2>Hi <span id="reviewerNameLabel"></span> — your peer reviews</h2>
+      <p class="muted">You've been assigned <strong>two</strong> submissions to review, identified only by anonymous IDs (e.g. "Submission #07"). The author's name is hidden — your job is to evaluate the work itself. Download each file, open it in Tableau (or the appropriate tool), then complete the review form.</p>
+      <p class="muted" style="margin-top:10px;"><strong>Two-way anonymity:</strong> you don't see whose work you're reviewing, and the author won't see who reviewed them. Reviews are submitted directly to the course instructor, who will compile feedback and share it back with each student. Your reviews are graded — please take them seriously and write specific, useful feedback.</p>
+
+      <div id="assignGrid" class="assign-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ STEP 3: REVIEW FORM ============ -->
+  <section id="step-review" class="hidden">
+    <div class="steps">
+      <div class="step done"><span class="dot">&#x2713;</span> Sign in</div><span class="sep">/</span>
+      <div class="step done"><span class="dot">&#x2713;</span> Assignments</div><span class="sep">/</span>
+      <div class="step active"><span class="dot">3</span> Review</div><span class="sep">/</span>
+      <div class="step"><span class="dot">4</span> Submit</div>
+    </div>
+
+    <div class="card">
+      <h2>Reviewing: <span id="reviewTargetLabel"></span></h2>
+      <p class="muted">Score each rubric criterion against the guiding question shown in <span style="border-left:3px solid var(--accent); padding-left:6px;">orange</span>. Provide written feedback that <em>justifies your score</em> and <em>names something specific</em> from the visualization. Generic comments like "good job" or "needs work" will not be helpful to the student.</p>
+
+      <div id="rubricContainer" style="margin-top:18px;"></div>
+
+      <div class="totals">
+        <div>
+          <div style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Total score</div>
+          <div><span id="totalScore" class="total-num">0</span> <span style="color:var(--muted); font-size:14px;">/ 100</span></div>
+        </div>
+        <div>
+          <button id="btnSubmitReview" disabled>Submit review</button>
+          <button class="secondary" id="btnBackToAssignments">Back</button>
+        </div>
+      </div>
+
+      <div id="submitError" class="alert-error hidden"></div>
+      <div id="submitSuccess" class="alert-success hidden"></div>
+    </div>
+  </section>
+
+  <!-- ============ STEP 4: DONE ============ -->
+  <section id="step-done" class="hidden">
+    <div class="card">
+      <h2>Review submitted</h2>
+      <p>Thanks — your review of <strong id="doneTargetLabel"></strong> has been submitted to the course instructor. The instructor will compile feedback and share it with the original student. The student will not see your name.</p>
+      <div class="small-btn-row">
+        <button id="btnBackAfterDone">Back to my assignments</button>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer-note">
+    Built for MGT 4250 — Section B • Peer review portal • If you have trouble, contact the course instructor.
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!--                       APPLICATION SCRIPT                      -->
+<!-- ============================================================ -->
+<script>
+/* ============================================================
+   CONFIG  — instructor-edited values
+   ============================================================ */
+
+// EmailJS credentials. Sign up free at https://www.emailjs.com/, create a service + template,
+// then paste your IDs here. See README.md for template variables required.
+const EMAILJS_PUBLIC_KEY = "PASTE_YOUR_PUBLIC_KEY_HERE";
+const EMAILJS_SERVICE_ID = "PASTE_YOUR_SERVICE_ID_HERE";
+const EMAILJS_TEMPLATE_ID = "PASTE_YOUR_TEMPLATE_ID_HERE";
+
+// CC the instructor on every review (optional — leave empty string to disable)
+const INSTRUCTOR_EMAIL = "vgude@elon.edu";
+
+// Roster: name, anonymous submission ID, and file URL.
+// Reviewers NEVER see `name` for the people they review — only `anonId`.
+// The instructor reference file (instructor-reference.md in the parent
+// folder, NOT in this repo) maps anonId back to name.
+// Reviews are emailed to the instructor only — student emails are not
+// needed and not stored here.
+const ROSTER = [
+  { name: "Brandon Anelli",          anonId: "14", file: "submissions/submission-14.twbx" },
+  { name: "Will Baum",               anonId: "03", file: "submissions/submission-03.twbx" },
+  { name: "Jack Brenner",            anonId: "19", file: "submissions/submission-19.twbx" },
+  { name: "Cooper Capola",           anonId: "09", file: "submissions/submission-09.twbx" },
+  { name: "Oliver Keicher",          anonId: "11", file: "submissions/submission-11.twbx" },
+  { name: "Lauren Kulda",            anonId: "02", file: "submissions/submission-02.twbx" },
+  { name: "Griffin Lange",           anonId: "17", file: "submissions/submission-17.twbx" },
+  { name: "Noah Ledis",              anonId: "05", file: "submissions/submission-05.twbx" },
+  { name: "Jake Lisa",               anonId: "20", file: "submissions/submission-20.twbx" },
+  { name: "Sarah McDonald",          anonId: "13", file: "submissions/submission-13.twbx" },
+  { name: "Maximus Michalski",       anonId: "08", file: "submissions/submission-08.twbx" },
+  { name: "Michael Muldrow",         anonId: "18", file: "submissions/submission-18.twbx" },
+  { name: "Dylen Nicholson",         anonId: "01", file: "submissions/submission-01.twbx" },
+  { name: "Amy Ollendorff",          anonId: "16", file: "submissions/submission-16.twbx" },
+  { name: "Gloria Plaza Gasalla",    anonId: "10", file: "submissions/submission-10.twbx" },
+  { name: "Lucy Powell",             anonId: "15", file: "submissions/submission-15.twbx" },
+  { name: "Maya Rocco",              anonId: "04", file: "submissions/submission-04.twbx" },
+  { name: "Henry Saunders",          anonId: "06", file: "submissions/submission-06.twbx" },
+  { name: "Jessica Summers",         anonId: "07", file: "submissions/submission-07.twbx" },
+  { name: "Devon Young",             anonId: "12", file: "submissions/submission-12.twbx" },
+];
+
+/* ============================================================
+   RUBRIC  — pulled directly from the official Assignment 5 rubric
+   ============================================================ */
+const RUBRIC = [
+  { id: "narr_hook",     category: "1. Narrative",                title: "Beginning — Hook & scope",
+    max: 5,  question: "Is there a clear problem/question? Does the opening define the scope (time, region, business unit)?" },
+  { id: "narr_journey",  category: "1. Narrative",                title: "Middle — Data journey",
+    max: 5,  question: "Do views build logically on each other? Are key metrics explored with clear transitions/captions?" },
+  { id: "narr_end",      category: "1. Narrative",                title: "End — Conclusion & call to action",
+    max: 5,  question: "Is there a clear central finding that directly answers the opening question?" },
+
+  { id: "viz_chart",     category: "2. Visualizations & Design",  title: "Chart type appropriateness",
+    max: 5,  question: "Are chart types (line, bar, scatter, map, etc.) the best fit for the data and message?" },
+  { id: "viz_color",     category: "2. Visualizations & Design",  title: "Color use",
+    max: 10, question: "Is color used purposefully to highlight insights or distinguish categories, not merely decoratively?" },
+  { id: "viz_typo",      category: "2. Visualizations & Design",  title: "Typography, labels & legends",
+    max: 10, question: "Are font size/style legible and consistent? Are labels and titles clear without deep analysis?" },
+
+  { id: "clut_dataink",  category: "3. Clutter & Layout",         title: "Data-ink ratio",
+    max: 15, question: "Are unnecessary elements (gridlines, 3D effects, redundant labels, complex backgrounds) removed?" },
+  { id: "clut_layout",   category: "3. Clutter & Layout",         title: "Layout, flow & white space",
+    max: 15, question: "Does placement of charts and text guide the viewer's eye? Is white space used to prevent crowding?" },
+
+  { id: "ins_clarity",   category: "4. Insights",                 title: "Message clarity",
+    max: 15, question: "Are findings/insights clearly stated (e.g., 'Sales dropped 15% in Q3') rather than just describing the chart?" },
+  { id: "ins_action",    category: "4. Insights",                 title: "Actionable takeaways",
+    max: 15, question: "Are insights business-relevant, do they explain the 'why,' and lead to specific decisions or actions?" },
+];
+
+/* ============================================================
+   ROUND-ROBIN ASSIGNMENT
+   ============================================================ */
+function getAssignmentsFor(reviewerIndex) {
+  const n = ROSTER.length;
+  const a = (reviewerIndex + 1) % n;
+  const b = (reviewerIndex + 2) % n;
+  return [ROSTER[a], ROSTER[b]];
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const STATE = {
+  reviewer: null,          // { name, email, index }  — instructor-only metadata
+  assignments: [],         // [target1, target2]
+  completed: new Set(),    // names of targets the reviewer has finished this session
+  currentTarget: null,     // target being reviewed
+  currentTargetIdx: -1,    // 0 or 1
+};
+
+/* ============================================================
+   DOM HELPERS
+   ============================================================ */
+const $  = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+function show(stepId) {
+  ["step-login","step-assignments","step-review","step-done"].forEach(id => {
+    document.getElementById(id).classList.toggle("hidden", id !== stepId);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ============================================================
+   STEP 1 — LOGIN
+   ============================================================ */
+function initLogin() {
+  const select = $("#reviewerName");
+  ROSTER.forEach((r, i) => {
+    const opt = document.createElement("option");
+    opt.value = String(i);
+    opt.textContent = r.name;
+    select.appendChild(opt);
+  });
+
+  $("#btnLogin").addEventListener("click", () => {
+    const idx = parseInt($("#reviewerName").value, 10);
+    const errEl = $("#loginError");
+    errEl.classList.add("hidden");
+
+    if (Number.isNaN(idx) || idx < 0) {
+      errEl.textContent = "Please select your name from the list.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+
+    STATE.reviewer = { ...ROSTER[idx], index: idx };
+    STATE.assignments = getAssignmentsFor(idx);
+
+    $("#reviewerNameLabel").textContent = STATE.reviewer.name;
+    renderAssignments();
+    show("step-assignments");
+  });
+}
+
+/* ============================================================
+   STEP 2 — ASSIGNMENTS
+   ============================================================ */
+function renderAssignments() {
+  const grid = $("#assignGrid");
+  grid.innerHTML = "";
+  STATE.assignments.forEach((target, i) => {
+    const isDone = STATE.completed.has(target.anonId);
+    const card = document.createElement("div");
+    card.className = "assign-card" + (isDone ? " complete" : "");
+    card.innerHTML = `
+      <span class="pill">${ isDone ? "Review submitted" : "Assignment " + (i + 1) }</span>
+      <h4>Submission #${target.anonId}</h4>
+      <div class="filename">${target.file.split("/").pop()}</div>
+      <div class="actions">
+        <a href="${target.file}" download>&#x2B07; Download submission</a>
+        <button data-idx="${i}" ${isDone ? "disabled" : ""}>
+          ${ isDone ? "Reviewed &#x2713;" : "Begin review &rarr;" }
+        </button>
+      </div>
+    `;
+    card.querySelector("button").addEventListener("click", (e) => {
+      const which = parseInt(e.currentTarget.getAttribute("data-idx"), 10);
+      startReview(which);
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ============================================================
+   STEP 3 — REVIEW FORM
+   ============================================================ */
+function startReview(idx) {
+  STATE.currentTargetIdx = idx;
+  STATE.currentTarget = STATE.assignments[idx];
+  $("#reviewTargetLabel").textContent = "Submission #" + STATE.currentTarget.anonId;
+
+  const container = $("#rubricContainer");
+  container.innerHTML = "";
+
+  // group by category
+  let lastCat = "";
+  RUBRIC.forEach((item) => {
+    if (item.category !== lastCat) {
+      const h = document.createElement("h3");
+      h.textContent = item.category;
+      h.style.marginTop = "26px";
+      container.appendChild(h);
+      lastCat = item.category;
+    }
+
+    const node = document.createElement("div");
+    node.className = "rubric-item";
+    node.innerHTML = `
+      <div class="head">
+        <div class="title">${item.title}</div>
+        <div class="max">/ ${item.max} pts</div>
+      </div>
+      <div class="question"><strong>Guiding question:</strong> ${item.question}</div>
+      <div class="score-row">
+        <div>
+          <label for="score_${item.id}">Score</label>
+          <div class="score-input">
+            <input type="number" id="score_${item.id}" min="0" max="${item.max}" step="1" placeholder="0" />
+            <span class="of">/ ${item.max}</span>
+          </div>
+        </div>
+        <div>
+          <label for="fb_${item.id}">Specific written feedback</label>
+          <textarea id="fb_${item.id}" placeholder="Be specific. Reference what you saw on which sheet/dashboard. Connect your feedback to the guiding question above."></textarea>
+          <div class="feedback-meta" id="meta_${item.id}"><span><span id="cnt_${item.id}">0</span> characters</span><span>Min 80</span></div>
+          <div class="extreme-warning" id="warn_${item.id}">
+            You assigned an extreme score (very high or very low). Please write at least <strong>200 characters</strong> explaining specifically what justifies it.
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(node);
+
+    // wire up live validation
+    const scoreEl = node.querySelector(`#score_${item.id}`);
+    const fbEl    = node.querySelector(`#fb_${item.id}`);
+    const cntEl   = node.querySelector(`#cnt_${item.id}`);
+    const metaEl  = node.querySelector(`#meta_${item.id}`);
+    const warnEl  = node.querySelector(`#warn_${item.id}`);
+
+    function update() {
+      const v = parseFloat(scoreEl.value);
+      // clamp
+      if (!Number.isNaN(v)) {
+        if (v < 0) scoreEl.value = 0;
+        if (v > item.max) scoreEl.value = item.max;
+      }
+
+      const fbLen = fbEl.value.trim().length;
+      cntEl.textContent = fbLen;
+
+      // is this an extreme score?
+      let extreme = false;
+      if (!Number.isNaN(v)) {
+        const ratio = v / item.max;
+        if (ratio >= 0.95 || ratio <= 0.30) extreme = true;
+      }
+      const minRequired = extreme ? 200 : 80;
+      metaEl.querySelector("span:last-child").textContent = `Min ${minRequired}`;
+      warnEl.classList.toggle("show", extreme);
+
+      metaEl.classList.toggle("warn", fbLen < minRequired);
+      metaEl.classList.toggle("good", fbLen >= minRequired);
+
+      recomputeTotalsAndButton();
+    }
+
+    scoreEl.addEventListener("input", update);
+    fbEl.addEventListener("input", update);
+  });
+
+  // overall comments
+  const overall = document.createElement("div");
+  overall.className = "rubric-item";
+  overall.innerHTML = `
+    <div class="head"><div class="title">Overall comments</div></div>
+    <div class="question"><strong>Required:</strong> What is the single most important thing this student should do to make this story stronger? What is one thing they did particularly well?</div>
+    <textarea id="fb_overall" placeholder="Be honest, specific, and constructive — the student needs concrete guidance."></textarea>
+    <div class="feedback-meta" id="meta_overall"><span><span id="cnt_overall">0</span> characters</span><span>Min 200</span></div>
+  `;
+  container.appendChild(overall);
+  const overallEl = $("#fb_overall");
+  overallEl.addEventListener("input", () => {
+    const len = overallEl.value.trim().length;
+    $("#cnt_overall").textContent = len;
+    const meta = $("#meta_overall");
+    meta.classList.toggle("warn", len < 200);
+    meta.classList.toggle("good", len >= 200);
+    recomputeTotalsAndButton();
+  });
+
+  $("#submitError").classList.add("hidden");
+  $("#submitSuccess").classList.add("hidden");
+  show("step-review");
+  recomputeTotalsAndButton();
+}
+
+/* ============================================================
+   TOTALS & VALIDATION
+   ============================================================ */
+function recomputeTotalsAndButton() {
+  let total = 0;
+  let valid = true;
+
+  for (const item of RUBRIC) {
+    const sv = parseFloat(document.getElementById(`score_${item.id}`).value);
+    const fb = document.getElementById(`fb_${item.id}`).value.trim();
+
+    if (Number.isNaN(sv)) { valid = false; }
+    else { total += sv; }
+
+    let extreme = false;
+    if (!Number.isNaN(sv)) {
+      const ratio = sv / item.max;
+      if (ratio >= 0.95 || ratio <= 0.30) extreme = true;
+    }
+    const minLen = extreme ? 200 : 80;
+    if (fb.length < minLen) valid = false;
+  }
+
+  const overallLen = ($("#fb_overall")?.value || "").trim().length;
+  if (overallLen < 200) valid = false;
+
+  const totalEl = $("#totalScore");
+  totalEl.textContent = String(total);
+  totalEl.classList.remove("bad","warn","good");
+  if (total >= 85) totalEl.classList.add("good");
+  else if (total >= 70) totalEl.classList.add("warn");
+  else totalEl.classList.add("bad");
+
+  $("#btnSubmitReview").disabled = !valid;
+}
+
+/* ============================================================
+   STEP 3 → STEP 4 — SUBMIT (EmailJS)
+
+   Each review is emailed ONLY to the instructor. The student is NOT
+   emailed directly — the instructor will compile and distribute later.
+   The body contains everything: reviewer name, anon ID, real student
+   name, all scores, all feedback. This becomes the instructor's record.
+   ============================================================ */
+function buildReviewBody() {
+  const target = STATE.currentTarget;
+
+  let total = 0;
+  const lines = [];
+  lines.push(`Submission #${target.anonId} — ${target.name}`);
+  lines.push(`Reviewer: ${STATE.reviewer.name}`);
+  lines.push(`Date: ${new Date().toLocaleString()}`);
+  lines.push("");
+  lines.push("=".repeat(60));
+  lines.push("");
+
+  let lastCat = "";
+  for (const item of RUBRIC) {
+    if (item.category !== lastCat) {
+      lines.push("");
+      lines.push(`### ${item.category} ###`);
+      lastCat = item.category;
+    }
+    const sv = parseFloat(document.getElementById(`score_${item.id}`).value) || 0;
+    const fb = document.getElementById(`fb_${item.id}`).value.trim();
+    total += sv;
+    lines.push("");
+    lines.push(`• ${item.title} — ${sv} / ${item.max}`);
+    lines.push(`  Guiding question: ${item.question}`);
+    lines.push(`  Feedback: ${fb}`);
+  }
+
+  lines.push("");
+  lines.push("=".repeat(60));
+  lines.push(`TOTAL: ${total} / 100`);
+  lines.push("=".repeat(60));
+  lines.push("");
+  lines.push("Overall comments:");
+  lines.push($("#fb_overall").value.trim());
+
+  return { body: lines.join("\n"), total };
+}
+
+async function submitReview() {
+  const errEl = $("#submitError");
+  const okEl  = $("#submitSuccess");
+  errEl.classList.add("hidden");
+  okEl.classList.add("hidden");
+
+  const target = STATE.currentTarget;
+
+  if (EMAILJS_PUBLIC_KEY.startsWith("PASTE_")) {
+    errEl.textContent = "EmailJS is not configured. The instructor needs to add the EmailJS keys before reviews can be sent. (See README.md.)";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  if (!INSTRUCTOR_EMAIL) {
+    errEl.textContent = "No instructor email is configured. Reviews can't be submitted until INSTRUCTOR_EMAIL is set in index.html.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+
+  const btn = $("#btnSubmitReview");
+  btn.disabled = true; btn.textContent = "Submitting…";
+
+  const review = buildReviewBody();
+
+  const params = {
+    to_email:       INSTRUCTOR_EMAIL,
+    to_name:        "Course Instructor",
+    reviewer_name:  STATE.reviewer.name,
+    review_subject: `[Review] ${STATE.reviewer.name} → Submission #${target.anonId} (${target.name}) — ${review.total}/100`,
+    total_score:    String(review.total),
+    review_body:    review.body,
+  };
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    STATE.completed.add(target.anonId);
+    $("#doneTargetLabel").textContent = "Submission #" + target.anonId;
+    show("step-done");
+  } catch (err) {
+    console.error(err);
+    errEl.textContent = "There was a problem submitting the review: " + (err?.text || err?.message || "unknown error");
+    errEl.classList.remove("hidden");
+    btn.disabled = false; btn.textContent = "Submit review";
+  }
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  // EmailJS
+  try {
+    if (window.emailjs && !EMAILJS_PUBLIC_KEY.startsWith("PASTE_")) {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+  } catch (e) { console.warn("EmailJS init failed", e); }
+
+  initLogin();
+  $("#btnSubmitReview").addEventListener("click", submitReview);
+  $("#btnBackToAssignments").addEventListener("click", () => {
+    renderAssignments();
+    show("step-assignments");
+  });
+  $("#btnBackAfterDone").addEventListener("click", () => {
+    renderAssignments();
+    show("step-assignments");
+  });
+});
+</script>
+</body>
+</html>
+                                                                                                                              
